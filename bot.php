@@ -44,7 +44,7 @@ function messageCollectorHandler($message, $isFirst = true, $players = null, $wi
         $ronde = 'pertama';
     } else {
         if($jawaban) {
-            $GLOBALS['embed']->setAuthor('Game Puased');
+            $GLOBALS['embed']->setAuthor('Game Paused');
             $GLOBALS['embed']->setColor('0xffff00');
             $GLOBALS['embed']->setDescription("Tidak ada yang berhasil menjawab. Jawaban:\n```$jawaban```\n". setupMinigamesDescription($players));
         } else {
