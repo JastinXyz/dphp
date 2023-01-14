@@ -29,7 +29,7 @@ $discord = new Discord([
     'intents' => Intents::getDefaultIntents() | Intents::MESSAGE_CONTENT
 ]);
 
-function messageCollectorHandler($message, $isFirst = true, $players = null, $winnerId = null)
+function messageCollectorHandler($message, $isFirst = true, $players = null, $winnerId = null, $jawaban = null)
 {
     $tableRonde = $GLOBALS['tableRonde'];
     $guild = $message->guild;
@@ -43,7 +43,14 @@ function messageCollectorHandler($message, $isFirst = true, $players = null, $wi
         $GLOBALS['embed']->setAuthor('Tebak Gambar | Bersiap!');
         $ronde = 'pertama';
     } else {
-        $GLOBALS['embed']->setDescription(setupMinigamesDescription($players));
+        if($jawaban) {
+            $GLOBALS['embed']->setAuthor('Game Puased');
+            $GLOBALS['embed']->setColor('0xffff00');
+            $GLOBALS['embed']->setDescription("Tidak ada yang berhasil menjawab. Jawaban:\n```$jawaban```\n". setupMinigamesDescription($players));
+        } else {
+            $GLOBALS['embed']->setDescription(setupMinigamesDescription($players));
+        }
+
         $ronde = 'selanjutnya';
     }
 
@@ -76,7 +83,7 @@ function messageCollectorHandler($message, $isFirst = true, $players = null, $wi
             $filter = fn ($message) => (in_array($message->author->id, $playersId) && strtolower($message->content) === strtolower($selected['jawaban'])) || ($message->author->id === $GLOBALS['host'] && strtolower($message->content) === "exit");
 
             $message->channel->createMessageCollector($filter, [
-                'time' => 60000,
+                'time' => 10000,
                 'limit' => 1
             ])->done(function (Collection $collected) use ($selected, $message, $msg, $totalRonde) {
                 $table = $GLOBALS['table'];
@@ -85,7 +92,13 @@ function messageCollectorHandler($message, $isFirst = true, $players = null, $wi
                 $guild = $message->guild;
                 $channel = $message->channel;
 
-                if (strtolower($collected[0]->content) === "exit") {
+                if (!$collected->count()) {
+                    $getPlayers = $GLOBALS['conn']->query("SELECT * from $table");
+                    $players = mysqli_fetch_all($getPlayers, MYSQLI_ASSOC);
+                    $msg->delete();
+                    messageCollectorHandler($message, false, $players, null, $selected['jawaban']);
+                    return;
+                } else if (strtolower($collected[0]->content) === "exit") {
                     $msg->delete();
 
                     $getPlayers = $GLOBALS['conn']->query("SELECT * from $table");
@@ -117,21 +130,14 @@ function messageCollectorHandler($message, $isFirst = true, $players = null, $wi
                     $GLOBALS['conn']->query("DELETE FROM $tableRonde WHERE `$tableRonde`.`guild`=$guild->id AND `$tableRonde`.`channel`=$channel->id");
                     return;
                 } else {
-                    if (!$collected->count()) {
-                        $message->channel->sendMessage("Tidak ada jawaban yang benar... Jawaban: " . $selected['jawaban']);
-                        $GLOBALS['conn']->query("DROP TABLE IF EXISTS $table");
-                        $GLOBALS['conn']->query("DELETE FROM $tableRonde WHERE `$tableRonde`.`guild`=$guild->id AND `$tableRonde`.`channel`=$channel->id");
-                        return;
-                    } else {
-                        $author = $collected[0]->author;
-                        $GLOBALS['conn']->query("UPDATE $table SET poin = poin + 1 WHERE player = $author->id");
-                        $msg->delete();
-                        $getPlayers = $GLOBALS['conn']->query("SELECT * from $table");
-                        $players = mysqli_fetch_all($getPlayers, MYSQLI_ASSOC);
+                    $author = $collected[0]->author;
+                    $GLOBALS['conn']->query("UPDATE $table SET poin = poin + 1 WHERE player = $author->id");
+                    $msg->delete();
+                    $getPlayers = $GLOBALS['conn']->query("SELECT * from $table");
+                    $players = mysqli_fetch_all($getPlayers, MYSQLI_ASSOC);
 
-                        messageCollectorHandler($message, false, $players, $author->id);
-                        return;
-                    }
+                    messageCollectorHandler($message, false, $players, $author->id);
+                    return;
                 }
             });
         });
