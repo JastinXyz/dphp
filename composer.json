@@ -1,8 +1,13 @@
 {
     "name": "jastin/anjani-php",
+    "type": "project",
+    "require": {
+        "team-reflex/discord-php": "^7.3",
+        "hassankhan/config": "^3.1"
+    },
     "autoload": {
         "psr-4": {
-            "Jastin\\AnjaniPhp\\": "src/"
+            "Bot\\": "src/"
         }
     },
     "authors": [
@@ -10,9 +15,5 @@
             "name": "JastinXyz",
             "email": "jastinlinggar@gmail.com"
         }
-    ],
-    "require": {
-        "team-reflex/discord-php": "^7.3",
-        "hassankhan/config": "^3.1"
-    }
+    ]
 }
