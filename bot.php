@@ -83,7 +83,7 @@ function messageCollectorHandler($message, $isFirst = true, $players = null, $wi
             $filter = fn ($message) => (in_array($message->author->id, $playersId) && strtolower($message->content) === strtolower($selected['jawaban'])) || ($message->author->id === $GLOBALS['host'] && strtolower($message->content) === "exit");
 
             $message->channel->createMessageCollector($filter, [
-                'time' => 10000,
+                'time' => 60000,
                 'limit' => 1
             ])->done(function (Collection $collected) use ($selected, $message, $msg, $totalRonde) {
                 $table = $GLOBALS['table'];
