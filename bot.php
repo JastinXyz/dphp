@@ -41,7 +41,7 @@ $discord->on('ready', function (Discord $discord) use ($prefix, $commands) {
             $args = explode(" ", substr($message->content, strlen($prefix)));
             $command = strtolower(array_shift($args));
 
-            $commands[$command]->execute($message);
+            $commands[$command]->execute($message, $args);
         }
     });
 });
