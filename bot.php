@@ -6,6 +6,7 @@ include __DIR__ . '/koneksi.php';
 require __DIR__ . '/utils/functions.php';
 
 use Bot\Commands\Ping;
+use Bot\Commands\Say;
 use Bot\Commands\TebakGambar;
 use Discord\Discord;
 use Discord\Parts\Channel\Message;
@@ -27,7 +28,8 @@ $discord = new Discord([
 
 $commands = [
     'ping' => new Ping($discord, $conn),
-    'tbk' => new TebakGambar($discord, $conn)
+    'tbk' => new TebakGambar($discord, $conn),
+    'say' => new Say($discord, $conn),
 ];
 
 $discord->on('ready', function (Discord $discord) use ($prefix, $commands) {
