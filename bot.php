@@ -114,12 +114,15 @@ function messageCollectorHandler($message, $isFirst = true, $players = null, $wi
                     });
 
                     $winner = $players[0]['player'];
+                    $winnerPoin = $players[0]['poin'];
 
                     $playerWinEmbed = new Embed($GLOBALS['discord']);
                     $playerWinEmbed->setDescription("**<@$winner> Telah memenangkan permainan!**");
                     $playerWinEmbed->setColor("0x5865F2");
                     $playerWinEmbed->setFooter("GG! $totalRonde Ronde telah dimainkan.");
                     $playerWinEmbed->setTimestamp();
+
+                    if($winnerPoin < 1) $playerWinEmbed->setDescription("**Nampaknya permainan seri.**");
 
                     $winBuilder = MessageBuilder::new();
                     $winBuilder->setEmbeds([$winEmbed, $playerWinEmbed]);
