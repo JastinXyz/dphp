@@ -5,9 +5,7 @@ include __DIR__ . '/koneksi.php';
 
 require __DIR__ . '/utils/functions.php';
 
-use Bot\Commands\Ping;
-use Bot\Commands\Say;
-use Bot\Commands\TebakGambar;
+use Bot\Commands\Command;
 use Discord\Discord;
 use Discord\Parts\Channel\Message;
 use Discord\WebSockets\Intents;
@@ -26,11 +24,8 @@ $discord = new Discord([
     'intents' => Intents::getDefaultIntents() | Intents::MESSAGE_CONTENT
 ]);
 
-$commands = [
-    'ping' => new Ping($discord, $conn),
-    'tbk' => new TebakGambar($discord, $conn),
-    'say' => new Say($discord, $conn),
-];
+$Command = new Command($discord, $conn);
+$commands = $Command->getAllCommands();
 
 $discord->on('ready', function (Discord $discord) use ($prefix, $commands) {
     echo "Bot is ready!", PHP_EOL;
@@ -43,7 +38,7 @@ $discord->on('ready', function (Discord $discord) use ($prefix, $commands) {
             $args = explode(" ", substr($message->content, strlen($prefix)));
             $command = strtolower(array_shift($args));
 
-            $commands[$command]->execute($message, $args);
+            if(array_key_exists($command, $commands)) $commands[$command]->execute($message, $args, $commands);
         }
     });
 });

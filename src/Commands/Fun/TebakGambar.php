@@ -1,7 +1,8 @@
 <?php
 
-namespace Bot\Commands;
+namespace Bot\Commands\Fun;
 
+use Bot\Commands\Command;
 use Bot\Handler\MessageCollector;
 use Discord\Builders\MessageBuilder;
 use Discord\Builders\Components\ActionRow;
@@ -11,6 +12,10 @@ use Discord\Parts\Interactions\Interaction;
 
 class TebakGambar extends Command
 {
+    public $name = "tebakgambar";
+    public $description = "Minigames tebak gambar";
+    public $category = "Fun";
+
     public function execute($message)
     {
         $guild = $message->guild;
