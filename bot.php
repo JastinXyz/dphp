@@ -24,11 +24,11 @@ $discord = new Discord([
     'intents' => Intents::getDefaultIntents() | Intents::MESSAGE_CONTENT
 ]);
 
-$Command = new Command($discord, $conn);
-$commands = $Command->getAllCommands();
-
-$discord->on('ready', function (Discord $discord) use ($prefix, $commands) {
+$discord->on('ready', function (Discord $discord) use ($prefix, $conn) {
     echo "Bot is ready!", PHP_EOL;
+
+    $Command = new Command($discord, $conn);
+    $commands = $Command->getAllCommands();
 
     // Listen for messages.
     $discord->on(Event::MESSAGE_CREATE, function (Message $message) use ($prefix, $commands) {
