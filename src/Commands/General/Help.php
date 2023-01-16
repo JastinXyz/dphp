@@ -9,6 +9,7 @@ use Discord\Parts\Embed\Embed;
 class Help extends Command
 {
     public $name = "help";
+    public $aliases = ['menu', '?'];
     public $description = "Command menu.";
     public $category = "General";
     

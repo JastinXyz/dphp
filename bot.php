@@ -27,18 +27,21 @@ $discord = new Discord([
 $discord->on('ready', function (Discord $discord) use ($prefix, $conn) {
     echo "Bot is ready!", PHP_EOL;
 
-    $Command = new Command($discord, $conn);
-    $commands = $Command->getAllCommands();
+    $commandInit = new Command($discord, $conn);
+    $commands = $commandInit->getAllCommands();
 
     // Listen for messages.
-    $discord->on(Event::MESSAGE_CREATE, function (Message $message) use ($prefix, $commands) {
+    $discord->on(Event::MESSAGE_CREATE, function (Message $message) use ($prefix, $commandInit, $commands) {
         if ($message->author->bot) return;
 
         if(str_starts_with($message->content, $prefix)) {
             $args = explode(" ", substr($message->content, strlen($prefix)));
             $command = strtolower(array_shift($args));
 
-            if(array_key_exists($command, $commands)) $commands[$command]->execute($message, $args, $commands);
+            $commandData = $commandInit->getCommandData($command);
+            if(!$commandData) return;
+
+            $commandData[0]->execute($message, $args, $commands);
         }
     });
 });

@@ -7,6 +7,7 @@ use Bot\Commands\Command;
 class Ping extends Command
 {
     public $name = "ping";
+    public $aliases = ['latency'];
     public $description = "Pong!";
     public $category = "General";
 

@@ -7,6 +7,7 @@ use Bot\Commands\Command;
 class Say extends Command
 {
     public $name = "say";
+    public $aliases = ['echo'];
     public $description = "Echo command.";
     public $category = "Fun";
 
