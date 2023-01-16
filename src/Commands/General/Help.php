@@ -13,21 +13,24 @@ class Help extends Command
     public $description = "Command menu.";
     public $category = "General";
     
-    public function execute($message, $args, $commands)
+    public function execute($message, $args)
     {
         $embed = new Embed($this->discord);
         $embed->setColor("0x272935");
         $builder = new MessageBuilder();
         $builder->setAllowedMentions(['parse' => []]);
 
+        $commands = $this->getAllCommands();
+
         if ($args) {
-            $info = @$commands[$args[0]];
+            $info = $this->getCommandData($args[0]);
+            if (!$info) return $message->reply($builder->setContent("Command **$args[0]** tidak ditemukan!!"));
 
-            if (!$info) return $message->reply($builder->setContent("Command tidak ditemukan! Gunakan nama command bukan alias!"));
-
+            $info = $info[0];
             $embed->setAuthor($info->name);
             $embed->setDescription($info->description);
             $embed->addFieldValues("Kategori", $info->category);
+            $embed->addFieldValues("Alias", count($info->aliases) ? "`".join("`, `", $info->aliases)."`" : '`tidak ada`');
 
             return $message->channel->sendMessage($builder->addEmbed($embed)->setReplyTo($message));
         }

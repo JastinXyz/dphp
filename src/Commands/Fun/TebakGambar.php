@@ -13,7 +13,7 @@ use Discord\Parts\Interactions\Interaction;
 class TebakGambar extends Command
 {
     public $name = "tebakgambar";
-    public $aliases = ['tbk'];
+    public $aliases = [];
     public $description = "Minigames tebak gambar";
     public $category = "Fun";
 
