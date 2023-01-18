@@ -6,6 +6,7 @@ include __DIR__ . '/koneksi.php';
 require __DIR__ . '/utils/functions.php';
 
 use Bot\Commands\Command;
+use Discord\Builders\MessageBuilder;
 use Discord\Discord;
 use Discord\Parts\Channel\Message;
 use Discord\WebSockets\Intents;
@@ -24,13 +25,13 @@ $discord = new Discord([
     'intents' => Intents::getDefaultIntents() | Intents::MESSAGE_CONTENT
 ]);
 
-$discord->on('ready', function (Discord $discord) use ($prefix, $conn) {
+$discord->on('ready', function (Discord $discord) use ($prefix, $conf, $conn) {
     echo "Bot is ready!", PHP_EOL;
 
     $commandInit = new Command($discord, $conn);
 
     // Listen for messages.
-    $discord->on(Event::MESSAGE_CREATE, function (Message $message) use ($prefix, $commandInit) {
+    $discord->on(Event::MESSAGE_CREATE, function (Message $message) use ($prefix, $conf, $commandInit) {
         if ($message->author->bot) return;
 
         if(str_starts_with($message->content, $prefix)) {
@@ -39,6 +40,10 @@ $discord->on('ready', function (Discord $discord) use ($prefix, $conn) {
 
             $commandData = $commandInit->getCommandData($command);
             if(!$commandData) return;
+
+            if(strtolower($commandData[0]->category) === "owner") {
+                if(!in_array($message->author->id, $conf['owners'])) return $message->reply(MessageBuilder::new()->setContent("kamu tidak memiliki akses!"));
+            }
 
             $commandData[0]->execute($message, $args);
         }
