@@ -50,7 +50,7 @@ $discord->on('ready', function (Discord $discord) use ($prefixes, $conf, $conn) 
             if(!$commandData) return;
 
             if(strtolower($commandData[0]->category) === "owner") {
-                if(!in_array($message->author->id, $conf['owners'])) return $message->reply(MessageBuilder::new()->setContent("kamu tidak memiliki akses!"));
+                if(!in_array($message->author->id, $conf['owners'])) return $message->reply(MessageBuilder::new()->setAllowedMentions(['parse' => []])->setContent("kamu tidak memiliki akses!"));
             }
 
             $commandData[0]->execute($message, $args);
