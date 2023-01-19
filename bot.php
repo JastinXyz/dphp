@@ -31,12 +31,15 @@ $discord->on('ready', function (Discord $discord) use ($prefixes, $conf, $conn) 
     $commandInit = new Command($discord, $conn);
 
     // Listen for messages.
-    $discord->on(Event::MESSAGE_CREATE, function (Message $message) use ($prefixes, $conf, $commandInit) {
+    $discord->on(Event::MESSAGE_CREATE, function (Message $message) use ($prefixes, $conf, $commandInit, $discord) {
         if ($message->author->bot) return;
 
         $prefix = array_filter($prefixes, function ($x) use ($message) {
             return strpos($message->content, $x) === 0;
         });
+
+        $client = $discord->user;
+        if(trim($message->content) === "<@$client->id>") return $message->reply(MessageBuilder::new()->setAllowedMentions(['parse' => []])->setContent("Gunakan `$prefixes[0]help` untuk melihat command list!"));
 
         if(!empty($prefix)) {
             $prefix = join(" ", $prefix);
