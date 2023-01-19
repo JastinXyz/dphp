@@ -3,6 +3,7 @@
 namespace Bot\Commands\General;
 
 use Bot\Commands\Command;
+use Carbon\Carbon;
 
 class Ping extends Command
 {
@@ -13,6 +14,7 @@ class Ping extends Command
 
     public function execute($message)
     {
-        $message->channel->sendMessage('Pong!');
+        $res = Carbon::now()->valueOf() - Carbon::parse($message->timestamp)->valueOf();
+        $message->channel->sendMessage("Pong! $res"."ms");
     }
 }
