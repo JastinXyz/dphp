@@ -16,7 +16,7 @@ use Monolog\Handler\NullHandler;
 use Noodlehaus\Config;
 
 $conf = new Config('config.json');
-$prefix = $conf['prefix'];
+$prefixes = $conf['prefix'];
 $logger = new Logger('Logger');
 $logger->pushHandler(new NullHandler());
 $discord = new Discord([
@@ -25,16 +25,21 @@ $discord = new Discord([
     'intents' => Intents::getDefaultIntents() | Intents::MESSAGE_CONTENT
 ]);
 
-$discord->on('ready', function (Discord $discord) use ($prefix, $conf, $conn) {
+$discord->on('ready', function (Discord $discord) use ($prefixes, $conf, $conn) {
     echo "Bot is ready!", PHP_EOL;
 
     $commandInit = new Command($discord, $conn);
 
     // Listen for messages.
-    $discord->on(Event::MESSAGE_CREATE, function (Message $message) use ($prefix, $conf, $commandInit) {
+    $discord->on(Event::MESSAGE_CREATE, function (Message $message) use ($prefixes, $conf, $commandInit) {
         if ($message->author->bot) return;
 
-        if(str_starts_with($message->content, $prefix)) {
+        $prefix = array_filter($prefixes, function ($x) use ($message) {
+            return strpos($message->content, $x) === 0;
+        });
+
+        if(!empty($prefix)) {
+            $prefix = join(" ", $prefix);
             $args = explode(" ", substr($message->content, strlen($prefix)));
             $command = strtolower(array_shift($args));
 
